@@ -1,5 +1,6 @@
 package br.ce.wcaquino.servicos;
 
+import br.ce.wcaquino.daos.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
@@ -10,6 +11,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,11 +34,22 @@ public class CalculoValorLocacaoTest {
     @Parameterized.Parameter(value = 2)
     public String descricao;
 
+    @InjectMocks
     private LocacaoService service;
+
+    @Mock
+    private SPCService spcService;
+    @Mock
+    private LocacaoDAO dao;
 
     @Before
     public void setup(){
-        service = new LocacaoService();
+        MockitoAnnotations.initMocks(this);
+//        service = new LocacaoService();
+//        dao = Mockito.mock(LocacaoDAO.class);
+//        service.setLocacaoDAO(dao);
+//        spcService = Mockito.mock(SPCService.class);
+//        service.setSpcService(spcService);
     }
 
     private static Filme filme1 = new Filme("Filme 1", 3, 4.0);
