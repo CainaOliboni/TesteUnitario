@@ -11,7 +11,11 @@ import br.ce.wcaquino.utils.DataUtils;
 import org.junit.*;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.*;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.*;
 
@@ -20,11 +24,12 @@ import static br.ce.wcaquino.builders.LocacaoBuilder.umaLocacao;
 import static br.ce.wcaquino.builders.UsuarioBuilder.umUsuario;
 import static br.ce.wcaquino.matchers.MatchersProprios.*;
 import static br.ce.wcaquino.utils.DataUtils.isMesmaData;
-import static br.ce.wcaquino.utils.DataUtils.obterDataComDiferencaDias;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.Mockito.when;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({LocacaoService.class, DataUtils.class})
 public class LocacaoServiceTest {
 
     @Rule
@@ -59,7 +64,9 @@ public class LocacaoServiceTest {
     @Test
     public void deveAlugarFilmeComSucesso() throws Exception {
 
-        Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
+//        Assume.assumeFalse(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));FUNÇÃO PARA EXECUTAR SOMENTE SABADO
+
+        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(28,4,2017));
 
         //cenario
         Usuario usuario = umUsuario().agora();
@@ -79,8 +86,10 @@ public class LocacaoServiceTest {
 //        assertTrue(DataUtils.isMesmaData(locacao.getDataLocacao(), new Date()));
 //        assertThat(locacao.getValor(), is(not(5.0)));
             errorCollector.checkThat(locacao.getValor(), is(equalTo(16.0)));
-            errorCollector.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
-            errorCollector.checkThat(isMesmaData(locacao.getDataRetorno(), obterDataComDiferencaDias(1)), is(true));
+//            errorCollector.checkThat(isMesmaData(locacao.getDataLocacao(), new Date()), is(true));
+//            errorCollector.checkThat(isMesmaData(locacao.getDataRetorno(), obterDataComDiferencaDias(1)), is(true));
+            errorCollector.checkThat(isMesmaData(locacao.getDataLocacao(), DataUtils.obterData(28,4,2017)), is(true));
+            errorCollector.checkThat(isMesmaData(locacao.getDataRetorno(), DataUtils.obterData(29,4,2017)), is(true));
             errorCollector.checkThat(locacao.getDataLocacao(), ehHoje());
             errorCollector.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDias(1));
 
@@ -259,9 +268,11 @@ public class LocacaoServiceTest {
     }
 
     @Test
-    public void deveDevolverNaSegundaAoAlugarNoSabado() throws FilmeSemEstoqueException, LocadoraException {
+    public void deveDevolverNaSegundaAoAlugarNoSabado() throws Exception {
 
-        Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY));
+//        Assume.assumeTrue(DataUtils.verificarDiaSemana(new Date(), Calendar.SATURDAY)); FUNÇÃO PARA EXECUTAR SOMENTE SABADO
+
+        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(29,4,2017));
 
         //cenario
         Usuario usuario = umUsuario().agora();
